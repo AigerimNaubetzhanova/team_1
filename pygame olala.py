@@ -17,8 +17,8 @@ you_lost_font = pygame.font.SysFont('Comic Sans MS', 40)
 # Load images
 spaceship = pygame.image.load("spaceship.png")
 green_laser = pygame.image.load("green_laser.png")
-red_laser = pygame.image.load("red_laser.png")
-enemy_ship = pygame.image.load("enemy.png")
+red_laser = pygame.image.load("redlaser.png")
+enemy_ship = pygame.image.load("blue_enemy.png")
 background = pygame.image.load("background.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the size of our window
 spaceship = pygame.transform.scale(spaceship, (100, 100))
