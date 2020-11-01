@@ -125,7 +125,20 @@ class Player(Ship):
                     if laser.collision(obj): # remove if  laser collide
                         obj.remove(obj)
                         self.lasers.remove(laser)
+    def draw(self, window): # implement draw method of the player shifts
+        super().draw(window)
+        self.healthbar(window)
 
+    def healthbar(self, window): # hunam takes self
+        pygame.draw.rect(window, (255,0,0), (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10)) #draw red and green rectangle based on the health of the player
+        pygame.draw.rect(window, (0,255,0), (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() * (self.health/self.max_health), 10))
+        #1st RED-length of the player, 2nd GREEN-on tip of the red (be only the length of the health)
+        #ex. (255,0,0)-red color; (self.x, self.y + self.ship_img.get_height() + 10- we want to be sure tha health bar is below our player(so we want to get y value of the player add height of the shipp and ten pixels and then start drawing)
+        #self.ship_img.get_width() * (self.health/self.max_health - what % of the width we should draw
+        
+        
+        
+        
 class Enemy(Ship):
     # those we will need when we add our own pictures
     COLOR_MAP={
@@ -141,7 +154,7 @@ class Enemy(Ship):
         self.y +=  vel
 
 
-player = Player(300, 650)
+player = Player(300, 630)
 level = 0
 lives = 5
 player_vel = 5
@@ -187,13 +200,13 @@ while run:
         if event.type == pygame.QUIT:
             run = False
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and player.x - player_vel > 0:
+    if keys[pygame.K_LEFT] and player.x - player_vel > 0: #left
         player.x -= player_vel
-    if keys[pygame.K_RIGHT] and player.x + player_vel + player.get_width() < WIDTH:
+    if keys[pygame.K_RIGHT] and player.x + player_vel + player.get_width() < WIDTH:#right
         player.x += player_vel
-    if keys[pygame.K_UP] and  player.y - player_vel > 0:
+    if keys[pygame.K_UP] and  player.y - player_vel > 0: #up
         player.y -= player_vel
-    if keys[pygame.K_DOWN]  and  player.y + player_vel + player.get_height() < HEIGHT:
+    if keys[pygame.K_DOWN]  and  player.y + player_vel + player.get_height() +10 < HEIGHT: #down
         player.y += player_vel
     if keys[pygame.K_SPACE]:
         player.shoot()
