@@ -7,7 +7,7 @@ fps = 60
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Space Shooter")
 clock = pygame.time.Clock()
-block_size = 50
+block_size = 75
 white = (255, 255, 255)
 
 pygame.font.init()
@@ -24,7 +24,7 @@ background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the
 spaceship = pygame.transform.scale(spaceship, (100, 100))
 green_laser = pygame.transform.scale(green_laser, (block_size, block_size))
 red_laser = pygame.transform.scale(red_laser, (block_size, block_size))
-enemy_ship = pygame.transform.scale(enemy_ship, (50, 50))
+enemy_ship = pygame.transform.scale(enemy_ship, (block_size, block_size))
 
 
 def update_window():  # in order to update the screen
