@@ -177,7 +177,7 @@ while run:
     if len(enemies) == 0:
         level += 1
         wave_length +=5
-        # this is for the enemies fall down at random positions
+        # this is for the enemies fall down at random positions positions 
         for i in range(wave_length):
             enemy = Enemy(random.randrange(50, WIDTH - 100), random.randrange(-1500, -100),
                           random.choice(["green"]))
