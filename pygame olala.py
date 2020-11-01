@@ -206,7 +206,7 @@ while run:
         player.x += player_vel
     if keys[pygame.K_UP] and  player.y - player_vel > 0: #up
         player.y -= player_vel
-    if keys[pygame.K_DOWN]  and  player.y + player_vel + player.get_height() +10 < HEIGHT: #down
+    if keys[pygame.K_DOWN]  and  player.y + player_vel + player.get_height() +15 < HEIGHT: #down
         player.y += player_vel
     if keys[pygame.K_SPACE]:
         player.shoot()
@@ -222,5 +222,17 @@ while run:
             enemies.remove(enemy)
 
     player.move_lasers(-laser_vel, enemies) # strelyat' vverh a ne vniz
-
-pygame.quit()
+    
+    
+    
+    
+def main_menu():
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                main()
+    
+    pygame.quit()
