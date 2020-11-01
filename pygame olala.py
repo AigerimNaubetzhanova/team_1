@@ -124,7 +124,10 @@ class Player(Ship):
                 for obj in objs:
                     if laser.collision(obj): # remove if  laser collide
                         obj.remove(obj)
-                        self.lasers.remove(laser)
+                        if laser in self.lasers:
+                            self.lasers.remove(laser)
+                            
+                            
     def draw(self, window): # implement draw method of the player shifts
         super().draw(window)
         self.healthbar(window)
@@ -227,9 +230,9 @@ while run:
     
     
 def main_menu():
-    title_font = pygame.font.SysFont("comicsans", 70)
+    title_font = pygame.font.SysFont("comicsans", 70) #defined a font
     run = True
-    while run:
+    while run: # main loop
         WIN.blit(BG, (0,0))
         title_label = title_font.render("Press the mouse to begin...", 1, (255,255,255))
         WIN.blit(title_label, (WIDTH/2 - title_label.get_width()/2, 350))
