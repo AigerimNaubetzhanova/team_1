@@ -31,6 +31,9 @@ blue_enemy_ship = pygame.transform.scale(blue_enemy_ship, (block_size, block_siz
 grey_enemy_ship = pygame.transform.scale(grey_enemy_ship, (100, 100))
 cosmos = pygame.image.load("cosmos.png")
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
+back = pygame.image.load("back.jpg")
+back = pygame.transform.scale(back, (160, 100))
+back.set_colorkey((0, 0, 0))
 
 
 class Laser:
@@ -129,8 +132,9 @@ class Player(Ship):
         pygame.draw.rect(window, (255, 0, 0),
                          (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10))
         pygame.draw.rect(window, (0, 255, 0), (
-        self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() * (self.health / self.max_health),
-        10))
+            self.x, self.y + self.ship_img.get_height() + 10,
+            self.ship_img.get_width() * (self.health / self.max_health),
+            10))
         # 1st RED-length of the player, 2nd GREEN-on tip of the red (be only the length of the health)
         # ex. (255,0,0)-red color; (self.x, self.y + self.ship_img.get_height() + 10- we want to be sure tha health bar is below our player(so we want to get y value of the player add height of the shipp and ten pixels and then start drawing)
         # self.ship_img.get_width() * (self.health/self.max_health - what % of the width we should draw
@@ -245,8 +249,6 @@ def main():
             player.shoot()
         if keys[pygame.K_ESCAPE]:
             game.menu()
-            pygame.key.set_repeat(1, 1)
-            pygame.mouse.set_visible(False)
 
         for enemy in enemies[:]:
             # everytime they are on the screen move them down with their velocities
@@ -268,31 +270,62 @@ def main():
     pygame.quit()
 
 
+fps = 60
+
+
 def help():
-    text_start = myfont.render("helpdkjanckjjd", True, white)
+    screen.blit(cosmos, (0, 0))
+    screen.blit(back, (0, 600))
+    text = you_lost_font.render("helpdkjanckjjd", True, white)
+    screen.blit(text, (170, 100))
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            rect = back.get_rect()
+            if rect.collidepoint(pos):
+                game.menu()
+    pygame.display.flip()
+    clock.tick(fps)
+
+
+def tool():
+    screen.blit(cosmos, (0, 0))
+    screen.blit(back, (0, 600))
+    text = you_lost_font.render("tool", True, white)
+    screen.blit(text, (170, 100))
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            rect = back.get_rect()
+            if rect.collidepoint(pos):
+                game.menu()
+    pygame.display.flip()
+    clock.tick(fps)
 
 
 class Menu:
     def __init__(self, punkts=[200, 300, 'Punkts', white, red, 2]):
         self.punkts = punkts
 
-    def render(self, poverhnost, font, num_punkt): #отрисовка
+    def render(self, poverhnost, font, num_punkt):  # отрисовка
         for i in self.punkts:
-            if num_punkt == i[5]: #если курсор и текущий эелемент совпадает окрашивается в красный
+            if num_punkt == i[5]:  # если курсор и текущий эелемент совпадает окрашивается в красный
                 poverhnost.blit(font.render(i[2], 1, i[4]), (i[0], i[1]))
             else:
-                poverhnost.blit(font.render(i[2], 1, i[3]), (i[0], i[1])) #если нет то не окрашивается
+                poverhnost.blit(font.render(i[2], 1, i[3]), (i[0], i[1]))  # если нет то не окрашивается
 
     def menu(self):
+        fps = 60
         done = True
         font_menu = pygame.font.SysFont("comicsans", 120)
         punkt = 0
-        pygame.key.set_repeat(0, 0) # отключили залипание курсора
-        pygame.mouse.set_visible(True) #сделали видимым курсор
+        pygame.key.set_repeat(0, 0)  # отключили залипание курсора
+        pygame.mouse.set_visible(True)  # сделали видимым курсор
         while done:
             mp = pygame.mouse.get_pos()
             for i in self.punkts:
-                if mp[0] > i[0] and mp[0] < i[0] + 300 and mp[1] > i[1] and mp[1] < i[1] + 100:#checking пересекается курсор в пунктом меню или нет
+                if mp[0] > i[0] and mp[0] < i[0] + 300 and mp[1] > i[1] and mp[1] < i[
+                    1] + 100:  # checking пересекается курсор в пунктом меню или нет
                     punkt = i[5]
             screen.blit(cosmos, (0, 0))
             self.render(screen, font_menu, punkt)
@@ -310,15 +343,19 @@ class Menu:
                         if punkt > len(self.punkts) - 1:
                             punkt += 1
                 if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
-                    if punkt == 0: # если нажать гейм то играет
+                    if punkt == 0:  # если нажать гейм то играет
                         main()
-                    if punkt == 1: # если нажать хелп выводит текст
+                    if punkt == 1:  # если нажать хелп выводит текст
+                        tool()
+                    if punkt == 2:
                         help()
 
             pygame.display.flip()
+            clock.tick(fps)
 
 
-punkts = [(270, 280, 'Game', white, red, 0),
-          (290, 400, 'Help', white, red, 1)]
+punkts = [(240, 220, 'Game', white, red, 0),
+          (260, 340, 'Tools', white, red, 1),
+          (280, 460, 'Help', white, red, 2)]
 game = Menu(punkts)
 game.menu()
