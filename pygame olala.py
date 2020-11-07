@@ -13,7 +13,7 @@ red = (200, 0, 0)
 pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
 you_lost_font = pygame.font.SysFont('Comic Sans MS', 40)
-
+my_font=pygame.font.SysFont('Comic Sans MS', 70)
 # Load images
 spaceship = pygame.image.load("spaceship.png")
 blue_laser = pygame.image.load("blue_laser.png")
@@ -29,10 +29,10 @@ greenlaser = pygame.transform.scale(greenlaser, (20, 50))
 red_laser = pygame.transform.scale(red_laser, (block_size, block_size))
 blue_enemy_ship = pygame.transform.scale(blue_enemy_ship, (block_size, block_size))
 grey_enemy_ship = pygame.transform.scale(grey_enemy_ship, (100, 100))
-cosmos = pygame.image.load("cosmos.png")
+cosmos = pygame.image.load("cosmos.jpg")
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
 back = pygame.image.load("back.jpg")
-back = pygame.transform.scale(back, (160, 100))
+back = pygame.transform.scale(back, (140, 90))
 back.set_colorkey((0, 0, 0))
 
 
@@ -168,7 +168,7 @@ def collide(obj1, obj2):
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None  # is obj1 overlapping obj2( given two masks
 
 
-def main():
+def main(menu):
     run = True
     fps = 60
     level = 0
@@ -273,37 +273,53 @@ def main():
 fps = 60
 
 
-def help():
+def help(menu):
     screen.blit(cosmos, (0, 0))
-    screen.blit(back, (0, 600))
-    text = you_lost_font.render("helpdkjanckjjd", True, white)
-    screen.blit(text, (170, 100))
+    text = my_font.render("The rules of the game:", True, white)
+    text1=you_lost_font.render("GOAL:", True, red)
+    text11=you_lost_font.render("shoot barriers and not get hurt.", True, white)
+    text3=you_lost_font.render("• You have only 5 lives", True, white)
+    text4=you_lost_font.render("• More killed enemies the higher level", True, white)
+    text5=you_lost_font.render("• After 5th level UFO enemies appear", True, white)
+    text6=you_lost_font.render("GOOD LUCK!", True, white)
+    screen.blit(text, (5, 0))
+    screen.blit(text1, (20, 130))
+    screen.blit(text11, (150, 130))
+    screen.blit(text3, (20, 230))
+    screen.blit(text4, (20, 330))
+    screen.blit(text5, (20, 430))
+    screen.blit(text6, (300, 600))
+    screen.blit(back, (0, 610))
     for e in pygame.event.get():
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            rect = back.get_rect()
+            rect =pygame.Rect((0,600,140,90))
             if rect.collidepoint(pos):
-                game.menu()
+                menu.state = "menu"
     pygame.display.flip()
     clock.tick(fps)
 
 
-def tool():
+def tool(menu):
     screen.blit(cosmos, (0, 0))
-    screen.blit(back, (0, 600))
-    text = you_lost_font.render("tool", True, white)
-    screen.blit(text, (170, 100))
+    screen.blit(back, (0, 610))
+    text = my_font.render("TOOLS", True, white)
+    text3=you_lost_font.render("Choose the background of the game", True, white)
+    screen.blit(text, (200, 0))
+    screen.blit(text3, (20, 130))
     for e in pygame.event.get():
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            rect = back.get_rect()
+            rect =pygame.Rect((0,600,140,90))
             if rect.collidepoint(pos):
-                game.menu()
+                menu.state = "menu"
     pygame.display.flip()
     clock.tick(fps)
 
 
 class Menu:
+    state = "menu"
+
     def __init__(self, punkts=[200, 300, 'Punkts', white, red, 2]):
         self.punkts = punkts
 
@@ -315,47 +331,57 @@ class Menu:
                 poverhnost.blit(font.render(i[2], 1, i[3]), (i[0], i[1]))  # если нет то не окрашивается
 
     def menu(self):
+        global state
         fps = 60
         done = True
         font_menu = pygame.font.SysFont("comicsans", 120)
         punkt = 0
         pygame.key.set_repeat(0, 0)  # отключили залипание курсора
-        pygame.mouse.set_visible(True)  # сделали видимым курсор
+        #pygame.mouse.set_visible(True)  # сделали видимым курсор
         while done:
-            mp = pygame.mouse.get_pos()
-            for i in self.punkts:
-                if mp[0] > i[0] and mp[0] < i[0] + 300 and mp[1] > i[1] and mp[1] < i[
-                    1] + 100:  # checking пересекается курсор в пунктом меню или нет
-                    punkt = i[5]
-            screen.blit(cosmos, (0, 0))
-            self.render(screen, font_menu, punkt)
+            if self.state == "menu":
+                mp = pygame.mouse.get_pos()
+                for i in self.punkts:
+                    if mp[0] > i[0] and mp[0] < i[0] + 300 and mp[1] > i[1] and mp[1] < i[1] + 100:  # checking пересекается курсор в пунктом меню или нет
+                        punkt = i[5]
+                screen.blit(cosmos, (0, 0))
+                self.render(screen, font_menu, punkt)
 
-            for e in pygame.event.get():
-                if e.type == pygame.QUIT:
-                    sys.exit()
-                if e.type == pygame.KEYDOWN:
-                    if e.key == pygame.K_ESCAPE:
-                        sys.exit()
-                    if e.key == pygame.K_UP:
-                        if punkt > 0:
-                            punkt -= 1
-                    if e.key == pygame.K_DOWN:
-                        if punkt > len(self.punkts) - 1:
-                            punkt += 1
-                if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
-                    if punkt == 0:  # если нажать гейм то играет
-                        main()
-                    if punkt == 1:  # если нажать хелп выводит текст
-                        tool()
-                    if punkt == 2:
-                        help()
+                for e in pygame.event.get():
+                    if e.type == pygame.QUIT:
+                        quit()
+                    if e.type == pygame.KEYDOWN:
+                        if e.key == pygame.K_ESCAPE:
+                            sys.exit()
+                        if e.key == pygame.K_UP:
+                            if punkt > 0:
+                                punkt -= 1
+                        if e.key == pygame.K_DOWN:
+                            if punkt > len(self.punkts) - 1:
+                                punkt += 1
+                    if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+                        if punkt == 0:  # если нажать гейм то играет
+                            self.state = "play"
+                        if punkt == 1:  # если нажать хелп выводит текст
+                            self.state = "tool"
+                        if punkt == 2:
+                            self.state = "help"
 
-            pygame.display.flip()
-            clock.tick(fps)
+                pygame.display.flip()
+                clock.tick(fps)
 
+            if self.state == "play":
+                main(self)
+
+            if self.state == "help":
+                help(self)
+
+            if self.state == "tool":
+                tool(self)
+        pygame.quit()
 
 punkts = [(240, 220, 'Game', white, red, 0),
           (260, 340, 'Tools', white, red, 1),
           (280, 460, 'Help', white, red, 2)]
 game = Menu(punkts)
-game.menu()
+game.menu() 
