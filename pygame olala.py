@@ -306,6 +306,9 @@ def help(menu):
     screen.blit(text6, (300, 600))
     screen.blit(back, (0, 610))
     for e in pygame.event.get():
+        if e.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             rect =pygame.Rect((0,600,140,90))
@@ -323,6 +326,9 @@ def tool(menu):
     screen.blit(text, (200, 0))
     screen.blit(text3, (20, 130))
     for e in pygame.event.get():
+        if e.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             rect =pygame.Rect((0,600,140,90))
@@ -364,7 +370,8 @@ class Menu:
 
                 for e in pygame.event.get():
                     if e.type == pygame.QUIT:
-                        quit()
+                        pygame.quit()
+                        sys.exit()
                     if e.type == pygame.KEYDOWN:
                         if e.key == pygame.K_ESCAPE:
                             sys.exit()
@@ -393,7 +400,6 @@ class Menu:
 
             if self.state == "tool":
                 tool(self)
-        pygame.quit()
 
 punkts = [(240, 220, 'Game', white, red, 0),
           (260, 340, 'Tools', white, red, 1),
