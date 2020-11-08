@@ -76,16 +76,6 @@ class Ship:
         for laser in self.lasers:
             laser.draw(window)
 
-    def move_lasers(self, vel, obj):
-        self.cooldown()
-        for laser in self.lasers:
-            laser.move(vel)
-            if laser.off_screen(HEIGHT):
-                self.lasers.remove(laser)
-            elif laser.collision(obj):
-                obj.health -= 10
-                self.lasers.remove(laser)
-
     def cooldown(self):
         if self.cool_down_counter >= self.COOLDOWN:
             self.cool_down_counter = 0
@@ -175,7 +165,7 @@ def main(menu):
     level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
-    lost_font = pygame.font.SysFont("comicsans", 60)
+    you_lost_font = pygame.font.SysFont("comicsans", 60)
 
     enemies = []
     wave_length = 5
@@ -189,7 +179,6 @@ def main(menu):
     clock = pygame.time.Clock()
 
     lost = False
-    lost_count = 0
 
     def update_window():  # in order to update the screen
         screen.blit(background, (0, 0))
@@ -206,13 +195,9 @@ def main(menu):
         player.draw(screen)
 
         if lost:
-            you_lost_label = you_lost_font.render("Game over", 1, (255, 255, 255))
-            screen.blit(you_lost_label, (WIDTH / 2 - you_lost_label.get_width() / 2, 350))
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    quit()
-
+            run = False
+            game = Menu(punkts)
+            game.menu()
         pygame.display.update()
 
     while run:
@@ -221,12 +206,7 @@ def main(menu):
         # if you lost then FREEZE
         if lives <= 0 and player.health <= 0:
             lost = True
-            lost_count += 1
-        if lost:
-            if lost_count > fps * 3:
-                run = False
-            else:
-                continue
+            continue
 
         if len(enemies) == 0:
             level += 1
@@ -240,7 +220,8 @@ def main(menu):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
+                pygame.quit()
+                sys.exit()
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player.x - player_vel > 0:  # left
@@ -257,34 +238,51 @@ def main(menu):
             game.menu()
 
         for enemy in enemies[:]:
-            # everytime they are on the screen move them down with their velocities
-            enemy.move_enemy(enemy_vel)
-            # everytime we don't kill the enemies we get lesser number of lives
-            enemy.move_lasers(laser_vel, player)
+            if not lost:
+                # everytime they are on the screen move them down with their velocities
+                enemy.move_enemy(enemy_vel)
+                # everytime we don't kill the enemies we get lesser number of lives
+                enemy.cooldown()
+                for laser in enemy.lasers:
+                    laser.move(laser_vel)
+                    if laser.off_screen(HEIGHT):
+                        enemy.lasers.remove(laser)
+                    elif laser.collision(player):
+                        if player.health == 10:
+                            if lives >= 1:
+                                lives -= 1
+                                player.health = player.max_health
+                                enemy.lasers.remove(laser)
+                            else:
+                                lost = True
+                        else:
+                            player.health -= 10
+                            enemy.lasers.remove(laser)
 
-            if random.randrange(0, 5 * 60) == 1:
-                enemy.shoot()
+                if not lost:
 
-            if collide(enemy, player):
-                if player.health == 10:
-                    if lives <= 0:
-                        lost = True
-                    else:
-                        player.health = player.max_health
-                        lives -= 1
-                        enemies.remove(enemy)
-                else:
-                    player.health -= 10
-                    enemies.remove(enemy)
-            elif enemy.y + enemy.get_height() > HEIGHT:
-                if lives <= 0:
-                    lost = True
-                else:
-                    lives -= 1
-                    enemies.remove(enemy)
+                    if random.randrange(0, 5 * 60) == 1:
+                        enemy.shoot()
+
+                    if collide(enemy, player):
+                        if player.health <= 10:
+                            if lives >= 1:
+                                lives -= 1
+                                player.health = player.max_health
+                                enemies.remove(enemy)
+                            else:
+                                lost = True
+                        else:
+                            player.health -= 10
+                            enemies.remove(enemy)
+                    elif enemy.y + enemy.get_height() > HEIGHT:
+                        if lives >= 1:
+                            lives -= 1
+                            enemies.remove(enemy)
+                        else:
+                            lost = True
 
         player.move_lasers(-laser_vel, enemies)  # strelyat' vverh a ne vniz
-    pygame.quit()
 
 
 fps = 60

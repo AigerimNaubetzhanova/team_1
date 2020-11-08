@@ -31,7 +31,7 @@ blue_enemy_ship = pygame.transform.scale(blue_enemy_ship, (block_size, block_siz
 grey_enemy_ship = pygame.transform.scale(grey_enemy_ship, (100, 100))
 cosmos = pygame.image.load("cosmos.jpg")
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
-back = pygame.image.load("back!.png")
+back = pygame.image.load("back.jpg")
 back = pygame.transform.scale(back, (140, 90))
 back.set_colorkey((0, 0, 0))
 
@@ -73,16 +73,6 @@ class Ship:
         # those we need to make boundaries for spaceship's movements, so it wouldn't get outside of the screen
         for laser in self.lasers:
             laser.draw(window)
-
-    def move_lasers(self, vel, obj):
-        self.cooldown()
-        for laser in self.lasers:
-            laser.move(vel)
-            if laser.off_screen(HEIGHT):
-                self.lasers.remove(laser)
-            elif laser.collision(obj):
-                obj.health -= 10
-                self.lasers.remove(laser)
 
     def cooldown(self):
         if self.cool_down_counter >= self.COOLDOWN:
@@ -160,6 +150,23 @@ class Enemy(Ship):
             self.lasers.append(laser)
             self.cool_down_counter = 1
 
+    def move_lasers(self, vel, obj, lives, lost):
+        self.cooldown()
+        for laser in self.lasers:
+            laser.move(vel)
+            if laser.off_screen(HEIGHT):
+                self.lasers.remove(laser)
+            elif laser.collision(obj):
+                if obj.health == 10:
+                    if lives <= 0:
+                        lost = True
+                    else:
+                        obj.health = 100
+                        lives -= 1
+                else:
+                    obj.health -= 10
+                    self.lasers.remove(laser)
+
 
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x  # distance from obj1 to obj2 returns vector
@@ -173,7 +180,7 @@ def main(menu):
     level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
-    lost_font = pygame.font.SysFont("comicsans", 60)
+    you_lost_font = pygame.font.SysFont("comicsans", 60)
 
     enemies = []
     wave_length = 5
@@ -201,12 +208,12 @@ def main(menu):
             enemy.draw(screen)
 
         player.draw(screen)
+        pygame.display.update()
 
         if lost:
             you_lost_label = you_lost_font.render("Game over", 1, (255, 255, 255))
             screen.blit(you_lost_label, (WIDTH / 2 - you_lost_label.get_width() / 2, 350))
 
-        pygame.display.update()
 
     while run:
         clock.tick(fps)
@@ -214,11 +221,10 @@ def main(menu):
         # if you lost then FREEZE
         if lives <= 0 and player.health <=0:
             lost = True
-            lost_count += 1
-            continue
+            lost_count +=1
 
         if lost:
-            if lost_count > fps * 3:
+            if lost_count > fps*2:
                 run = False
             else:
                 continue
@@ -255,14 +261,18 @@ def main(menu):
             # everytime they are on the screen move them down with their velocities
             enemy.move_enemy(enemy_vel)
             # everytime we don't kill the enemies we get lesser number of lives
-            enemy.move_lasers(laser_vel, player)
+            enemy.move_lasers(laser_vel, player, lives, lost)
+            if lost:
+                you_lost_label = you_lost_font.render("Game over", 1, (255, 255, 255))
+                screen.blit(you_lost_label, (WIDTH / 2 - you_lost_label.get_width() / 2, 350))
+                run = False
 
             if random.randrange(0, 2 * 60) == 1:
                 enemy.shoot()
 
             if collide(enemy, player):
                 if player.health == 10:
-                    if lives <= 0:
+                    if lives == 0:
                         lost = True
                     else:
                         player.health = player.max_health
@@ -272,7 +282,7 @@ def main(menu):
                     player.health -= 10
                     enemies.remove(enemy)
             elif enemy.y + enemy.get_height() > HEIGHT:
-                if lives <= 0:
+                if lives == 0:
                     lost = True
                 else:
                     #player.health=player.max_health

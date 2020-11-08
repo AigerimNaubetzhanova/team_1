@@ -31,7 +31,7 @@ blue_enemy_ship = pygame.transform.scale(blue_enemy_ship, (block_size, block_siz
 grey_enemy_ship = pygame.transform.scale(grey_enemy_ship, (100, 100))
 cosmos = pygame.image.load("cosmos.jpg")
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
-back = pygame.image.load("back.png")
+back = pygame.image.load("back!.png")
 back = pygame.transform.scale(back, (160, 100))
 back.set_colorkey((0, 0, 0))
 
@@ -226,6 +226,7 @@ def main(menu):
         if len(enemies) == 0:
             level += 1
             wave_length += 5
+            enemy_vel += 1
             # this is for the enemies fall down at random positions positions
             for i in range(wave_length):
                 enemy = Enemy(random.randrange(50, WIDTH - 100), random.randrange(-1500, -100),
@@ -260,11 +261,22 @@ def main(menu):
                 enemy.shoot()
 
             if collide(enemy, player):
-                player.health -= 10
-                enemies.remove(enemy)
+                if player.health == 10:
+                    if lives <= 0:
+                        lost = True
+                    else:
+                        player.health = player.max_health
+                        lives -= 1
+                        enemies.remove(enemy)
+                else:
+                    player.health -= 10
+                    enemies.remove(enemy)
             elif enemy.y + enemy.get_height() > HEIGHT:
-                lives -= 1
-                enemies.remove(enemy)
+                if lives <= 0:
+                    lost = True
+                else:
+                    lives -= 1
+                    enemies.remove(enemy)
 
         player.move_lasers(-laser_vel, enemies)  # strelyat' vverh a ne vniz
     pygame.quit()
