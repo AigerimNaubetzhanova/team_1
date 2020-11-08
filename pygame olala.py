@@ -22,6 +22,7 @@ red_laser = pygame.image.load("redlaser.png")
 blue_enemy_ship = pygame.image.load("blue_enemy.png")
 grey_enemy_ship = pygame.image.load("grey_enemy.png")
 background = pygame.image.load("background.png")
+heart = pygame.image.load("heart.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the size of our window
 spaceship = pygame.transform.scale(spaceship, (100, 100))
 blue_laser = pygame.transform.scale(blue_laser, (20, 50))
@@ -29,6 +30,7 @@ greenlaser = pygame.transform.scale(greenlaser, (20, 50))
 red_laser = pygame.transform.scale(red_laser, (block_size, block_size))
 blue_enemy_ship = pygame.transform.scale(blue_enemy_ship, (block_size, block_size))
 grey_enemy_ship = pygame.transform.scale(grey_enemy_ship, (100, 100))
+heart = pygame.transform.scale(heart, (block_size // 2, block_size // 2))
 cosmos = pygame.image.load("cosmos.jpg")
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
 back = pygame.image.load("back.jpg")
@@ -191,10 +193,11 @@ def main(menu):
 
     def update_window():  # in order to update the screen
         screen.blit(background, (0, 0))
-        lives_label = main_font.render(f"Lives: {lives}", 1, (255, 255, 255))  # f takes the value of the brackets
+        for x in range(lives):
+            screen.blit(heart, (x * block_size // 2, 0))
+
         level_label = main_font.render(f"Level: {level}", 1, (255, 255, 255))
 
-        screen.blit(lives_label, (10, 10))
         screen.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
 
         for enemy in enemies:
@@ -205,6 +208,10 @@ def main(menu):
         if lost:
             you_lost_label = you_lost_font.render("Game over", 1, (255, 255, 255))
             screen.blit(you_lost_label, (WIDTH / 2 - you_lost_label.get_width() / 2, 350))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit()
 
         pygame.display.update()
 
