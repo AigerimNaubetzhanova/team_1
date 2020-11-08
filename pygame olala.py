@@ -132,9 +132,8 @@ class Player(Ship):
         pygame.draw.rect(window, (255, 0, 0),
                          (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10))
         pygame.draw.rect(window, (0, 255, 0), (
-            self.x, self.y + self.ship_img.get_height() + 10,
-            self.ship_img.get_width() * (self.health / self.max_health),
-            10))
+        self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() - (self.max_health - self.health),
+        10))
         # 1st RED-length of the player, 2nd GREEN-on tip of the red (be only the length of the health)
         # ex. (255,0,0)-red color; (self.x, self.y + self.ship_img.get_height() + 10- we want to be sure tha health bar is below our player(so we want to get y value of the player add height of the shipp and ten pixels and then start drawing)
         # self.ship_img.get_width() * (self.health/self.max_health - what % of the width we should draw
@@ -180,8 +179,8 @@ def main(menu):
     wave_length = 5
     enemy_vel = 1
 
-    player_vel = 5
-    laser_vel = 5
+    player_vel = 10
+    laser_vel = 10
 
     player = Player(300, 630)
 
@@ -213,10 +212,9 @@ def main(menu):
         clock.tick(fps)
         update_window()
         # if you lost then FREEZE
-        if lives <= 0 or player.health <= 0:
+        if lives <= 0 and player.health <= 0:
             lost = True
             lost_count += 1
-
         if lost:
             if lost_count > fps * 3:
                 run = False
@@ -226,6 +224,7 @@ def main(menu):
         if len(enemies) == 0:
             level += 1
             wave_length += 5
+            enemy_vel += 1
             # this is for the enemies fall down at random positions positions
             for i in range(wave_length):
                 enemy = Enemy(random.randrange(50, WIDTH - 100), random.randrange(-1500, -100),
@@ -256,15 +255,26 @@ def main(menu):
             # everytime we don't kill the enemies we get lesser number of lives
             enemy.move_lasers(laser_vel, player)
 
-            if random.randrange(0, 2 * 60) == 1:
+            if random.randrange(0, 5 * 60) == 1:
                 enemy.shoot()
 
             if collide(enemy, player):
-                player.health -= 10
-                enemies.remove(enemy)
+                if player.health == 10:
+                    if lives <= 0:
+                        lost = True
+                    else:
+                        player.health = player.max_health
+                        lives -= 1
+                        enemies.remove(enemy)
+                else:
+                    player.health -= 10
+                    enemies.remove(enemy)
             elif enemy.y + enemy.get_height() > HEIGHT:
-                lives -= 1
-                enemies.remove(enemy)
+                if lives <= 0:
+                    lost = True
+                else:
+                    lives -= 1
+                    enemies.remove(enemy)
 
         player.move_lasers(-laser_vel, enemies)  # strelyat' vverh a ne vniz
     pygame.quit()
