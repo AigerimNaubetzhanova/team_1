@@ -24,7 +24,7 @@ blue_enemy_ship = pygame.image.load("blue_enemy.png")
 grey_enemy_ship = pygame.image.load("grey_enemy.png")
 background = pygame.image.load("background.png")
 heart = pygame.image.load("heart.png")
-explosion_picture = pygame.image.load("explosion.png")
+explosion_picture = pygame.image.load("explosions.png")
 explosion_picture = pygame.transform.scale(explosion_picture, (100, 100))
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the size of our window
 spaceship = pygame.transform.scale(spaceship, (100, 100))
@@ -43,11 +43,11 @@ icon=pygame.image.load('GRPW.png')
 pygame.display.set_icon(icon)
 
 # Load sound
-menu_back_ground = pygame.mixer.Sound("menu_bg_song.wav")
-laser_shoot = pygame.mixer.Sound("blaster-firing.wav")
-enemy_hits_spaceship = pygame.mixer.Sound("enemy_hits_spaceship.wav")
+menu_back_ground = pygame.mixer.Sound("menu_bg_songs.wav")
+laser_shoot = pygame.mixer.Sound("blaster-firings.wav")
+enemy_hits_spaceship = pygame.mixer.Sound("enemy_hits_spaceships.wav")
 # enemy_laser_shoot = pygame.mixer.Sound("sound/enemy_laser_shoot.wav")  я не стала для врага также устанавливать звук ибо слишком много их стало
-explosion_sound = pygame.mixer.Sound("Explosion_sound.wav")
+explosion_sound = pygame.mixer.Sound("Explosion_sounds.wav")
 class Laser:
 
     def __init__(self, x, y, img):
