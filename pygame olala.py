@@ -36,7 +36,8 @@ cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
 back = pygame.image.load("back.jpg")
 back = pygame.transform.scale(back, (140, 90))
 back.set_colorkey((0, 0, 0))
-
+icon=pygame.image.load('GRPW.png')
+pygame.display.set_icon(icon)
 
 class Laser:
     def __init__(self, x, y, img):
@@ -297,6 +298,7 @@ def help(menu):
     text4=you_lost_font.render("• More killed enemies the higher level", True, white)
     text5=you_lost_font.render("• After 5th level UFO enemies appear", True, white)
     text6=you_lost_font.render("GOOD LUCK!", True, white)
+    text7=you_lost_font.render("• If you want to close game, click on X", True, white)
     screen.blit(text, (5, 0))
     screen.blit(text1, (20, 130))
     screen.blit(text11, (150, 130))
@@ -304,6 +306,7 @@ def help(menu):
     screen.blit(text4, (20, 330))
     screen.blit(text5, (20, 430))
     screen.blit(text6, (300, 600))
+    screen.blit(text7, (20, 490))
     screen.blit(back, (0, 610))
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
@@ -316,27 +319,6 @@ def help(menu):
                 menu.state = "menu"
     pygame.display.flip()
     clock.tick(fps)
-
-
-def tool(menu):
-    screen.blit(cosmos, (0, 0))
-    screen.blit(back, (0, 610))
-    text = my_font.render("TOOLS", True, white)
-    text3=you_lost_font.render("Choose the background of the game", True, white)
-    screen.blit(text, (200, 0))
-    screen.blit(text3, (20, 130))
-    for e in pygame.event.get():
-        if e.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if e.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            rect =pygame.Rect((0,600,140,90))
-            if rect.collidepoint(pos):
-                menu.state = "menu"
-    pygame.display.flip()
-    clock.tick(fps)
-
 
 class Menu:
     state = "menu"
@@ -358,12 +340,11 @@ class Menu:
         font_menu = pygame.font.SysFont("comicsans", 120)
         punkt = 0
         pygame.key.set_repeat(0, 0)  # отключили залипание курсора
-        #pygame.mouse.set_visible(True)  # сделали видимым курсор
         while done:
             if self.state == "menu":
                 mp = pygame.mouse.get_pos()
                 for i in self.punkts:
-                    if mp[0] > i[0] and mp[0] < i[0] + 300 and mp[1] > i[1] and mp[1] < i[1] + 100:  # checking пересекается курсор в пунктом меню или нет
+                    if mp[0] > i[0] and mp[0] < i[0] + 260 and mp[1] > i[1] and mp[1] < i[1] + 100:  # checking пересекается курсор в пунктом меню или нет
                         punkt = i[5]
                 screen.blit(cosmos, (0, 0))
                 self.render(screen, font_menu, punkt)
@@ -372,21 +353,10 @@ class Menu:
                     if e.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit()
-                    if e.type == pygame.KEYDOWN:
-                        if e.key == pygame.K_ESCAPE:
-                            sys.exit()
-                        if e.key == pygame.K_UP:
-                            if punkt > 0:
-                                punkt -= 1
-                        if e.key == pygame.K_DOWN:
-                            if punkt > len(self.punkts) - 1:
-                                punkt += 1
                     if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                         if punkt == 0:  # если нажать гейм то играет
                             self.state = "play"
                         if punkt == 1:  # если нажать хелп выводит текст
-                            self.state = "tool"
-                        if punkt == 2:
                             self.state = "help"
 
                 pygame.display.flip()
@@ -398,11 +368,7 @@ class Menu:
             if self.state == "help":
                 help(self)
 
-            if self.state == "tool":
-                tool(self)
-
-punkts = [(240, 220, 'Game', white, red, 0),
-          (260, 340, 'Tools', white, red, 1),
-          (280, 460, 'Help', white, red, 2)]
+punkts = [(250, 260, 'Game', white, red, 0),
+          (275, 390, 'Help', white, red, 1)]
 game = Menu(punkts)
 game.menu() 
