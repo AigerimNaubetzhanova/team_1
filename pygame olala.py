@@ -1,12 +1,13 @@
 import pygame
 import random
 import sys
-
+from pygame import mixer
 pygame.init()
+pygame.mixer.init()
+clock = pygame.time.Clock()
 WIDTH, HEIGHT = 750, 750
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Space Shooter")
-clock = pygame.time.Clock()
 block_size = 75
 white = (255, 255, 255)
 red = (200, 0, 0)
@@ -23,6 +24,8 @@ blue_enemy_ship = pygame.image.load("blue_enemy.png")
 grey_enemy_ship = pygame.image.load("grey_enemy.png")
 background = pygame.image.load("background.png")
 heart = pygame.image.load("heart.png")
+explosion_picture = pygame.image.load("explosion.png")
+explosion_picture = pygame.transform.scale(explosion_picture, (100, 100))
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the size of our window
 spaceship = pygame.transform.scale(spaceship, (100, 100))
 blue_laser = pygame.transform.scale(blue_laser, (20, 50))
@@ -39,12 +42,20 @@ back.set_colorkey((0, 0, 0))
 icon=pygame.image.load('GRPW.png')
 pygame.display.set_icon(icon)
 
+# Load sound
+menu_back_ground = pygame.mixer.Sound("menu_bg_song.wav")
+laser_shoot = pygame.mixer.Sound("blaster-firing.wav")
+enemy_hits_spaceship = pygame.mixer.Sound("enemy_hits_spaceship.wav")
+# enemy_laser_shoot = pygame.mixer.Sound("sound/enemy_laser_shoot.wav")  я не стала для врага также устанавливать звук ибо слишком много их стало
+explosion_sound = pygame.mixer.Sound("Explosion_sound.wav")
 class Laser:
+
     def __init__(self, x, y, img):
         self.x = x
         self.y = y
         self.img = img
         self.mask = pygame.mask.from_surface(self.img)
+
 
     def draw(self, window):
         window.blit(self.img, (self.x, self.y))
@@ -96,6 +107,7 @@ class Ship:
             self.cool_down_counter = 1
 
 
+
 class Player(Ship):
     def __init__(self, x, y, health=100):
         super().__init__(x, y, health)
@@ -112,7 +124,10 @@ class Player(Ship):
                 self.lasers.remove(laser)
             else:
                 for obj in objs:
-                    if laser.collision(obj):  # remove if  laser collide
+                    if laser.collision(obj): # remove if  laser collide
+                        screen.blit(explosion_picture, (obj.x, obj.y))
+                        pygame.display.update()
+                        pygame.mixer.Sound.play(explosion_sound)
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
@@ -154,6 +169,9 @@ class Enemy(Ship):
             self.cool_down_counter = 1
 
 
+
+
+
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x  # distance from obj1 to obj2 returns vector
     offset_y = obj2.y - obj1.y
@@ -161,6 +179,7 @@ def collide(obj1, obj2):
 
 
 def main(menu):
+    pygame.mixer.fadeout(2000)
     run = True
     fps = 60
     level = 0
@@ -234,6 +253,7 @@ def main(menu):
         if keys[pygame.K_DOWN] and player.y + player_vel + player.get_height() + 15 < HEIGHT:  # down
             player.y += player_vel
         if keys[pygame.K_SPACE]:
+            pygame.mixer.Sound.play(laser_shoot)
             player.shoot()
         if keys[pygame.K_ESCAPE]:
             game.menu()
@@ -265,7 +285,9 @@ def main(menu):
                     if random.randrange(0, 5 * 60) == 1:
                         enemy.shoot()
 
+
                     if collide(enemy, player):
+                        pygame.mixer.Sound.play(enemy_hits_spaceship)
                         if player.health <= 10:
                             if lives >= 1:
                                 lives -= 1
@@ -283,7 +305,7 @@ def main(menu):
                         else:
                             lost = True
 
-        player.move_lasers(-laser_vel, enemies)  # strelyat' vverh a ne vniz
+        player.move_lasers(-laser_vel, enemies)# strelyat' vverh a ne vniz
 
 
 fps = 60
@@ -322,7 +344,7 @@ def help(menu):
 
 class Menu:
     state = "menu"
-
+    pygame.mixer.Sound.play(menu_back_ground)
     def __init__(self, punkts=[200, 300, 'Punkts', white, red, 2]):
         self.punkts = punkts
 
@@ -371,4 +393,4 @@ class Menu:
 punkts = [(250, 260, 'Game', white, red, 0),
           (275, 390, 'Help', white, red, 1)]
 game = Menu(punkts)
-game.menu() 
+game.menu()
