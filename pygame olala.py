@@ -12,9 +12,9 @@ block_size = 75
 white = (255, 255, 255)
 red = (200, 0, 0)
 pygame.font.init()
-myfont = pygame.font.SysFont('Comic Sans MS', 30)
-you_lost_font = pygame.font.SysFont('Comic Sans MS', 30)
-my_font=pygame.font.SysFont('Comic Sans MS', 55)
+myfont = pygame.font.Font('you_lost.ttf', 30)
+you_lost_font = pygame.font.Font('you_lost.ttf', 20)
+my_font=pygame.font.Font('you_lost.ttf', 40)
 # Load images
 spaceship = pygame.image.load("spaceship.png")
 blue_laser = pygame.image.load("blue_laser.png")
@@ -46,8 +46,9 @@ pygame.display.set_icon(icon)
 menu_back_ground = pygame.mixer.Sound("menu_bg_songs.wav")
 laser_shoot = pygame.mixer.Sound("blaster-firings.wav")
 enemy_hits_spaceship = pygame.mixer.Sound("enemy_hits_spaceships.wav")
-# enemy_laser_shoot = pygame.mixer.Sound("sound/enemy_laser_shoot.wav")  я не стала для врага также устанавливать звук ибо слишком много их стало
+enemy_laser_shoot = pygame.mixer.Sound("Blaster-Ricochet.wav")
 explosion_sound = pygame.mixer.Sound("Explosion_sounds.wav")
+when_the_last_life_is_left = pygame.mixer.Sound("whenlastlifeleft.wav")
 class Laser:
 
     def __init__(self, x, y, img):
@@ -105,6 +106,7 @@ class Ship:
             laser = Laser(self.x + 15, self.y, self.laser_img)
             self.lasers.append(laser)
             self.cool_down_counter = 1
+
 
 
 
@@ -172,18 +174,13 @@ class Enemy(Ship):
 
 
 
+
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x  # distance from obj1 to obj2 returns vector
     offset_y = obj2.y - obj1.y
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None  # is obj1 overlapping obj2( given two masks
 
-def pause():
-    pause = True
-    while pause:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+
 def main(menu):
     pygame.mixer.fadeout(2000)
     run = True
@@ -277,6 +274,8 @@ def main(menu):
                         if player.health == 10:
                             if lives >= 1:
                                 lives -= 1
+                                pygame.mixer.Sound.play(when_the_last_life_is_left)
+                                pygame.mixer.fadeout(2000)
                                 player.health = player.max_health
                                 enemy.lasers.remove(laser)
                             else:
@@ -290,22 +289,26 @@ def main(menu):
                     if random.randrange(0, 5 * 60) == 1:
                         enemy.shoot()
 
-
                     if collide(enemy, player):
                         pygame.mixer.Sound.play(enemy_hits_spaceship)
                         if player.health <= 10:
                             if lives >= 1:
                                 lives -= 1
+                                pygame.mixer.Sound.play(when_the_last_life_is_left)
+                                pygame.mixer.fadeout(2000)
                                 player.health = player.max_health
                                 enemies.remove(enemy)
                             else:
                                 lost = True
                         else:
                             player.health -= 10
+                            pygame.mixer.Sound.play(enemy_laser_shoot)
                             enemies.remove(enemy)
                     elif enemy.y + enemy.get_height() > HEIGHT:
                         if lives >= 1:
                             lives -= 1
+                            pygame.mixer.Sound.play(when_the_last_life_is_left)
+                            pygame.mixer.fadeout(2000)
                             enemies.remove(enemy)
                         else:
                             lost = True
@@ -373,7 +376,7 @@ def gameover():
     clock.tick(fps)
 class Menu:
     state = "menu"
-    pygame.mixer.Sound.play(menu_back_ground)
+    pygame.mixer.Sound.play(menu_back_ground, loops=-1)
     def __init__(self, punkts=[200, 300, 'Punkts', white, red, 2]):
         self.punkts = punkts
 
@@ -388,7 +391,7 @@ class Menu:
         global state
         fps = 60
         done = True
-        font_menu = pygame.font.SysFont("comicsans", 120)
+        font_menu = pygame.font.Font("you_lost.ttf", 100)
         punkt = 0
         pygame.key.set_repeat(0, 0)  # отключили залипание курсора
         while done:
@@ -421,7 +424,7 @@ class Menu:
 
 
 
-punkts = [(250, 260, 'Game', white, red, 0),
-          (275, 390, 'Help', white, red, 1)]
+punkts = [(200, 260, 'Game', white, red, 0),
+          (230, 390, 'Help', white, red, 1)]
 game = Menu(punkts)
 game.menu()
