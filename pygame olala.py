@@ -13,8 +13,8 @@ white = (255, 255, 255)
 red = (200, 0, 0)
 pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
-you_lost_font = pygame.font.SysFont('Comic Sans MS', 40)
-my_font=pygame.font.SysFont('Comic Sans MS', 70)
+you_lost_font = pygame.font.SysFont('Comic Sans MS', 30)
+my_font=pygame.font.SysFont('Comic Sans MS', 55)
 # Load images
 spaceship = pygame.image.load("spaceship.png")
 blue_laser = pygame.image.load("blue_laser.png")
@@ -34,7 +34,7 @@ red_laser = pygame.transform.scale(red_laser, (block_size, block_size))
 blue_enemy_ship = pygame.transform.scale(blue_enemy_ship, (block_size, block_size))
 grey_enemy_ship = pygame.transform.scale(grey_enemy_ship, (100, 100))
 heart = pygame.transform.scale(heart, (block_size // 2, block_size // 2))
-cosmos = pygame.image.load("cosmos.jpg")
+cosmos = pygame.image.load("menu1.jpg")
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
 back = pygame.image.load("back.jpg")
 back = pygame.transform.scale(back, (140, 90))
@@ -191,7 +191,6 @@ def main(menu):
     level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
-    you_lost_font = pygame.font.SysFont("comicsans", 60)
 
     enemies = []
     wave_length = 5
@@ -222,9 +221,9 @@ def main(menu):
 
         if lost:
             run = False
-            game = Menu(punkts)
-            game.menu()
+            gameover()
         pygame.display.update()
+
 
     while run:
         clock.tick(fps)
@@ -318,36 +317,60 @@ fps = 60
 
 
 def help(menu):
+    cosmos.set_colorkey((0,0,0))
+    cosmos.set_alpha(50)
     screen.blit(cosmos, (0, 0))
+    surf=pygame.Surface((730,600))
+    surf.set_alpha(30)
+    screen.blit(surf,(10,10))
+
     text = my_font.render("The rules of the game:", True, white)
-    text1=you_lost_font.render("GOAL:", True, red)
-    text11=you_lost_font.render("shoot barriers and not get hurt.", True, white)
-    text3=you_lost_font.render("• You have only 5 lives", True, white)
-    text4=you_lost_font.render("• More killed enemies the higher level", True, white)
-    text5=you_lost_font.render("• After 5th level UFO enemies appear", True, white)
-    text6=you_lost_font.render("GOOD LUCK!", True, white)
-    text7=you_lost_font.render("• If you want to close game, click on X", True, white)
-    screen.blit(text, (5, 0))
-    screen.blit(text1, (20, 130))
-    screen.blit(text11, (150, 130))
-    screen.blit(text3, (20, 230))
-    screen.blit(text4, (20, 330))
-    screen.blit(text5, (20, 430))
-    screen.blit(text6, (300, 600))
-    screen.blit(text7, (20, 490))
-    screen.blit(back, (0, 610))
+    text1 = you_lost_font.render("GOAL:", True, red)
+    text11 = you_lost_font.render("shoot and not let enemies get in", True, white)
+    text3 = you_lost_font.render("• You have only 6 lives", True, white)
+    text4 = you_lost_font.render("• More enemies you kill, the higher level you get", True, white)
+    text5 = you_lost_font.render("• If you let them get in, you will loose one life", True, white)
+    text7 = you_lost_font.render("• If you want to close game, click on  the button X", True, white)
+    text6 = you_lost_font.render("GOOD LUCK!", True, white)
+    screen.blit(text, (75, 10))
+    screen.blit(text1, (90, 120))
+    screen.blit(text11, (190, 120))
+    screen.blit(text3, (20, 200))
+    screen.blit(text4, (20, 280))
+    screen.blit(text5, (20, 370))
+    screen.blit(text7, (20, 460))
+    screen.blit(text6, (300, 550))
+    screen.blit(back, (20, 610))
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            rect =pygame.Rect((0,600,140,90))
+            rect =pygame.Rect((20,600,140,90))
             if rect.collidepoint(pos):
                 menu.state = "menu"
     pygame.display.flip()
     clock.tick(fps)
 
+
+def gameover():
+    screen.blit(cosmos, (0, 0))
+    text = my_font.render("Game over!", True, red)
+    screen.blit(back, (20, 610))
+    screen.blit(text, (WIDTH//2-150,HEIGHT//2-100))
+    for e in pygame.event.get():
+        if e.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if e.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            rect =pygame.Rect((20,600,140,90))
+            if rect.collidepoint(pos):
+                game = Menu(punkts)
+                game.menu()
+    pygame.display.flip()
+    clock.tick(fps)
 class Menu:
     state = "menu"
     pygame.mixer.Sound.play(menu_back_ground)
@@ -395,6 +418,8 @@ class Menu:
 
             if self.state == "help":
                 help(self)
+
+
 
 punkts = [(250, 260, 'Game', white, red, 0),
           (275, 390, 'Help', white, red, 1)]
