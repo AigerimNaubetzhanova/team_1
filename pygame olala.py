@@ -205,11 +205,11 @@ def main(menu):
     def update_window():  # in order to update the screen
         screen.blit(background, (0, 0))
         for x in range(lives):
-            screen.blit(heart, (x * block_size // 2, 40))
+            screen.blit(heart, (x * block_size // 2, 0))
 
         level_label = main_font.render(f"Level: {level}", 1, (255, 255, 255))
 
-        screen.blit(level_label, (WIDTH - level_label.get_width() - 590, 0))
+        screen.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
 
         for enemy in enemies:
             enemy.draw(screen)
@@ -361,7 +361,7 @@ def gameover():
     screen.blit(cosmos, (0, 0))
     text = my_font.render("Game over", True, red)
     screen.blit(back, (20, 610))
-    screen.blit(text, (WIDTH//2-276,HEIGHT//2-65))
+    screen.blit(text, (WIDTH//2-276,HEIGHT//2-60))
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             pygame.quit()
