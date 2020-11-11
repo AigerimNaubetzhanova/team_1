@@ -12,9 +12,9 @@ block_size = 75
 white = (255, 255, 255)
 red = (200, 0, 0)
 pygame.font.init()
-myfont = pygame.font.Font('you_lost.ttf', 30)
+myfont = pygame.font.Font('you_lost.ttf', 40)
 you_lost_font = pygame.font.Font('you_lost.ttf', 20)
-my_font=pygame.font.Font('you_lost.ttf', 40)
+my_font=pygame.font.Font('you_lost.ttf', 70)
 # Load images
 spaceship = pygame.image.load("spaceship.png")
 blue_laser = pygame.image.load("blue_laser.png")
@@ -22,7 +22,7 @@ greenlaser = pygame.image.load("greenlaser.png")
 red_laser = pygame.image.load("redlaser.png")
 blue_enemy_ship = pygame.image.load("blue_enemy.png")
 grey_enemy_ship = pygame.image.load("grey_enemy.png")
-background = pygame.image.load("background.png")
+background = pygame.image.load("background.png").convert()
 heart = pygame.image.load("heart.png")
 explosion_picture = pygame.image.load("explosions.png")
 explosion_picture = pygame.transform.scale(explosion_picture, (100, 100))
@@ -34,7 +34,7 @@ red_laser = pygame.transform.scale(red_laser, (block_size, block_size))
 blue_enemy_ship = pygame.transform.scale(blue_enemy_ship, (block_size, block_size))
 grey_enemy_ship = pygame.transform.scale(grey_enemy_ship, (100, 100))
 heart = pygame.transform.scale(heart, (block_size // 2, block_size // 2))
-cosmos = pygame.image.load("menu1.jpg")
+cosmos = pygame.image.load("menu1.jpg").convert()
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
 back = pygame.image.load("back.jpg")
 back = pygame.transform.scale(back, (140, 90))
@@ -187,7 +187,7 @@ def main(menu):
     fps = 60
     level = 0
     lives = 5
-    main_font = pygame.font.SysFont("comicsans", 50)
+    main_font = pygame.font.Font("level.ttf", 30)
 
     enemies = []
     wave_length = 5
@@ -205,11 +205,11 @@ def main(menu):
     def update_window():  # in order to update the screen
         screen.blit(background, (0, 0))
         for x in range(lives):
-            screen.blit(heart, (x * block_size // 2, 0))
+            screen.blit(heart, (x * block_size // 2, 40))
 
         level_label = main_font.render(f"Level: {level}", 1, (255, 255, 255))
 
-        screen.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+        screen.blit(level_label, (WIDTH - level_label.get_width() - 590, 0))
 
         for enemy in enemies:
             enemy.draw(screen)
@@ -327,7 +327,7 @@ def help(menu):
     surf.set_alpha(30)
     screen.blit(surf,(10,10))
 
-    text = my_font.render("The rules of the game:", True, white)
+    text = myfont.render("The rules of the game:", True, white)
     text1 = you_lost_font.render("GOAL:", True, red)
     text11 = you_lost_font.render("shoot and not let enemies get in", True, white)
     text3 = you_lost_font.render("• You have only 6 lives", True, white)
@@ -359,9 +359,9 @@ def help(menu):
 
 def gameover():
     screen.blit(cosmos, (0, 0))
-    text = my_font.render("Game over!", True, red)
+    text = my_font.render("Game over", True, red)
     screen.blit(back, (20, 610))
-    screen.blit(text, (WIDTH//2-150,HEIGHT//2-100))
+    screen.blit(text, (WIDTH//2-276,HEIGHT//2-65))
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             pygame.quit()
@@ -425,6 +425,6 @@ class Menu:
 
 
 punkts = [(200, 260, 'Game', white, red, 0),
-          (230, 390, 'Help', white, red, 1)]
+          (235, 390, 'Help', white, red, 1)]
 game = Menu(punkts)
 game.menu()
