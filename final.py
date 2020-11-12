@@ -381,10 +381,10 @@ def help(menu):
 def gameover(points):
     screen.blit(cosmos, (0, 0))
     text = my_font.render("Game over", True, red)
-    text2 =my_font.render(f"{int(points)} points", True, white)
+    text2 =myfont.render(f"Points: {int(points)} ", True, white)
     screen.blit(back, (20, 610))
     screen.blit(text, (WIDTH//2-276,HEIGHT//2-65))
-    screen.blit(text2, (WIDTH // 2 - 276, HEIGHT // 2 - 200))
+    screen.blit(text2, (WIDTH // 2 - 150, HEIGHT // 2 + 10))
 
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
