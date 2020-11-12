@@ -121,6 +121,7 @@ class Player(Ship):
 
 
     def move_lasers(self, vel, objs):
+        points = 0
         self.cooldown()
         for laser in self.lasers:
             laser.move(vel)
@@ -132,11 +133,9 @@ class Player(Ship):
                         screen.blit(explosion_picture, (obj.x, obj.y))
                         pygame.display.update()
                         pygame.mixer.Sound.play(explosion_sound)
-
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
-
     def draw(self, window):  # implement draw method of the player shifts
         super().draw(window)
         self.healthbar(window)
@@ -194,8 +193,7 @@ def main(menu):
     main_font = pygame.font.Font("level.ttf", 30)
 
     enemies = []
-    wave_length = 5
-    enemy_vel = 1
+    wave_length = 3    enemy_vel = 1
 
     player_vel = 10
     laser_vel = 10
@@ -212,8 +210,8 @@ def main(menu):
 
         level_label = main_font.render(f"Level: {level}", 1, (255, 255, 255))
         points_label = main_font.render(f"Points: {int(points)}", 1, (255, 255, 255))
-        screen.blit(level_label, (WIDTH - level_label.get_width() - 590, 0))
-        screen.blit(points_label, (WIDTH - level_label.get_width() - 590, 80))
+        screen.blit(level_label, (WIDTH - level_label.get_width() - 580, 0))
+        screen.blit(points_label, (WIDTH - level_label.get_width() - 580, 80))
 
         for enemy in enemies:
             enemy.draw(screen)
