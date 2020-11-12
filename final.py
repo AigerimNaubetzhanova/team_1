@@ -13,7 +13,6 @@ white = (255, 255, 255)
 red = (200, 0, 0)
 pygame.font.init()
 myfont = pygame.font.Font('you_lost.ttf', 40)
-my_font2 = pygame.font.Font('you_lost.ttf', 20)
 you_lost_font = pygame.font.Font('you_lost.ttf', 20)
 my_font=pygame.font.Font('you_lost.ttf', 70)
 # Load images
@@ -191,7 +190,7 @@ def main(menu):
     main_font = pygame.font.Font("level.ttf", 30)
 
     enemies = []
-    wave_length = 5
+    wave_length = 3
     enemy_vel = 1
 
     player_vel = 10
@@ -209,8 +208,8 @@ def main(menu):
 
         level_label = main_font.render(f"Level: {level}", 1, (255, 255, 255))
         points_label = main_font.render(f"Points: {int(points)}", 1, (255, 255, 255))
-        screen.blit(level_label, (WIDTH - level_label.get_width() - 590, 0))
-        screen.blit(points_label, (WIDTH - level_label.get_width() - 590, 80))
+        screen.blit(level_label, (10, 0))
+        screen.blit(points_label, (500,0))
 
         for enemy in enemies:
             enemy.draw(screen)
@@ -235,7 +234,7 @@ def main(menu):
 
         if len(enemies) == 0:
             level += 1
-            wave_length += 5
+            wave_length += 3
             enemy_vel += 1
             # this is for the enemies fall down at random positions positions
             for i in range(wave_length):
@@ -275,8 +274,6 @@ def main(menu):
                 # everytime we don't kill the enemies we get lesser number of lives
                 enemy.cooldown()
 
-
-
                 for laser in enemy.lasers:
                     laser.move(laser_vel)
                     if laser.off_screen(HEIGHT):
@@ -293,6 +290,7 @@ def main(menu):
                             else:
                                 lost = True
 
+
                         else:
                             player.health -= 10
                             enemy.lasers.remove(laser)
@@ -302,7 +300,6 @@ def main(menu):
 
                     if random.randrange(0, 5 * 60) == 1:
                         enemy.shoot()
-
 
 
                     if collide(enemy, player):
@@ -379,9 +376,11 @@ def gameover(points):
     screen.blit(cosmos, (0, 0))
     text = my_font.render("Game over", True, red)
     text2 =my_font.render(f"{int(points)} points", True, white)
+
     screen.blit(back, (20, 610))
     screen.blit(text, (WIDTH//2-276,HEIGHT//2-65))
-    screen.blit(text2, (WIDTH // 2 - 276, HEIGHT // 2 - 200))
+    screen.blit(text2, (WIDTH // 2 - 250, HEIGHT // 2 - 150))
+
 
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
