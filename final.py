@@ -2,6 +2,7 @@ import pygame
 import random
 import sys
 from pygame import mixer
+
 pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
@@ -13,9 +14,8 @@ white = (255, 255, 255)
 red = (200, 0, 0)
 pygame.font.init()
 myfont = pygame.font.Font('you_lost.ttf', 40)
-my_font2 = pygame.font.Font('you_lost.ttf', 20)
 you_lost_font = pygame.font.Font('you_lost.ttf', 20)
-my_font=pygame.font.Font('you_lost.ttf', 70)
+my_font = pygame.font.Font('you_lost.ttf', 70)
 # Load images
 spaceship = pygame.image.load("spaceship.png")
 blue_laser = pygame.image.load("blue_laser.png")
@@ -40,7 +40,7 @@ cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
 back = pygame.image.load("back.jpg")
 back = pygame.transform.scale(back, (140, 90))
 back.set_colorkey((0, 0, 0))
-icon=pygame.image.load('GRPW.png')
+icon = pygame.image.load('GRPW.png')
 pygame.display.set_icon(icon)
 
 # Load sound
@@ -50,14 +50,14 @@ enemy_hits_spaceship = pygame.mixer.Sound("enemy_hits_spaceships.wav")
 enemy_laser_shoot = pygame.mixer.Sound("Blaster-Ricochet.wav")
 explosion_sound = pygame.mixer.Sound("Explosion_sounds.wav")
 when_the_last_life_is_left = pygame.mixer.Sound("whenlastlifeleft.wav")
-class Laser:
 
+
+class Laser:
     def __init__(self, x, y, img):
         self.x = x
         self.y = y
         self.img = img
         self.mask = pygame.mask.from_surface(self.img)
-
 
     def draw(self, window):
         window.blit(self.img, (self.x, self.y))
@@ -94,7 +94,7 @@ class Ship:
         if self.cool_down_counter >= self.COOLDOWN:
             self.cool_down_counter = 0
         elif self.cool_down_counter > 0:
-            self.cool_down_counter += 1
+            self.cool_down_counter += 2
 
     def get_width(self):
         return self.ship_img.get_width()
@@ -109,8 +109,6 @@ class Ship:
             self.cool_down_counter = 1
 
 
-
-
 class Player(Ship):
     def __init__(self, x, y, health=100):
         super().__init__(x, y, health)
@@ -119,9 +117,7 @@ class Player(Ship):
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
 
-
     def move_lasers(self, vel, objs):
-        points = 0
         self.cooldown()
         for laser in self.lasers:
             laser.move(vel)
@@ -129,13 +125,14 @@ class Player(Ship):
                 self.lasers.remove(laser)
             else:
                 for obj in objs:
-                    if laser.collision(obj): # remove if  laser collide
+                    if laser.collision(obj):  # remove if  laser collide
                         screen.blit(explosion_picture, (obj.x, obj.y))
                         pygame.display.update()
                         pygame.mixer.Sound.play(explosion_sound)
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
+
     def draw(self, window):  # implement draw method of the player shifts
         super().draw(window)
         self.healthbar(window)
@@ -144,9 +141,10 @@ class Player(Ship):
         pygame.draw.rect(window, (255, 0, 0),
                          (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10))
         pygame.draw.rect(window, (0, 255, 0), (
-        self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() - (self.max_health - self.health),
-        10))
-      
+            self.x, self.y + self.ship_img.get_height() + 10,
+            self.ship_img.get_width() - (self.max_health - self.health),
+            10))
+
 
 class Enemy(Ship):
     # those we will need when we add our own pictures
@@ -163,15 +161,12 @@ class Enemy(Ship):
     def move_enemy(self, vel):
         self.y += vel
 
+
     def shoot(self):
         if self.cool_down_counter == 0:
             laser = Laser(self.x + 35, self.y, self.laser_img)
             self.lasers.append(laser)
             self.cool_down_counter = 1
-
-
-
-
 
 
 def collide(obj1, obj2):
@@ -190,7 +185,8 @@ def main(menu):
     main_font = pygame.font.Font("level.ttf", 30)
 
     enemies = []
-    wave_length = 3    enemy_vel = 1
+    wave_length = 3
+    enemy_vel = 1
 
     player_vel = 10
     laser_vel = 10
@@ -207,8 +203,8 @@ def main(menu):
 
         level_label = main_font.render(f"Level: {level}", 1, (255, 255, 255))
         points_label = main_font.render(f"Points: {int(points)}", 1, (255, 255, 255))
-        screen.blit(level_label, (WIDTH - level_label.get_width() - 580, 0))
-        screen.blit(points_label, (WIDTH - level_label.get_width() - 580, 80))
+        screen.blit(level_label, (10, 0))
+        screen.blit(points_label, (500, 0))
 
         for enemy in enemies:
             enemy.draw(screen)
@@ -220,20 +216,13 @@ def main(menu):
             gameover(points)
         pygame.display.update()
 
-
     while run:
         clock.tick(fps)
         update_window()
-        # if you lost then FREEZE
-
-
-        if lives <= 0 and player.health <= 0:
-            lost = True
-            continue
 
         if len(enemies) == 0:
             level += 1
-            wave_length += 5
+            wave_length += 3
             enemy_vel += 1
             # this is for the enemies fall down at random positions positions
             for i in range(wave_length):
@@ -261,9 +250,6 @@ def main(menu):
         if keys[pygame.K_ESCAPE]:
             game.menu()
 
-
-
-
         for enemy in enemies[:]:
             if not lost:
                 points += 0.01
@@ -272,8 +258,6 @@ def main(menu):
                 enemy.move_enemy(enemy_vel)
                 # everytime we don't kill the enemies we get lesser number of lives
                 enemy.cooldown()
-
-
 
                 for laser in enemy.lasers:
                     laser.move(laser_vel)
@@ -287,21 +271,16 @@ def main(menu):
                                 pygame.mixer.fadeout(2000)
                                 player.health = player.max_health
                                 enemy.lasers.remove(laser)
-
                             else:
                                 lost = True
-
                         else:
                             player.health -= 10
                             enemy.lasers.remove(laser)
-
 
                 if not lost:
 
                     if random.randrange(0, 5 * 60) == 1:
                         enemy.shoot()
-
-
 
                     if collide(enemy, player):
                         pygame.mixer.Sound.play(enemy_hits_spaceship)
@@ -314,6 +293,7 @@ def main(menu):
                                 enemies.remove(enemy)
                             else:
                                 lost = True
+
                         else:
                             player.health -= 10
                             pygame.mixer.Sound.play(enemy_laser_shoot)
@@ -329,19 +309,20 @@ def main(menu):
                         else:
                             lost = True
 
-        player.move_lasers(-laser_vel, enemies)# strelyat' vverh a ne vniz
+        if not lost:
+            player.move_lasers(-laser_vel, enemies)  # strelyat' vverh a ne vniz
 
 
 fps = 60
 
 
 def help(menu):
-    cosmos.set_colorkey((0,0,0))
+    cosmos.set_colorkey((0, 0, 0))
     cosmos.set_alpha(50)
     screen.blit(cosmos, (0, 0))
-    surf=pygame.Surface((730,600))
+    surf = pygame.Surface((730, 600))
     surf.set_alpha(30)
-    screen.blit(surf,(10,10))
+    screen.blit(surf, (10, 10))
 
     text = myfont.render("The rules of the game:", True, white)
     text1 = you_lost_font.render("GOAL:", True, red)
@@ -366,7 +347,7 @@ def help(menu):
             sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            rect =pygame.Rect((20,600,140,90))
+            rect = pygame.Rect((20, 600, 140, 90))
             if rect.collidepoint(pos):
                 menu.state = "menu"
     pygame.display.flip()
@@ -376,10 +357,11 @@ def help(menu):
 def gameover(points):
     screen.blit(cosmos, (0, 0))
     text = my_font.render("Game over", True, red)
-    text2 =myfont.render(f"Points: {int(points)} ", True, white)
+    text2 = my_font.render(f"{int(points)} points", True, white)
+
     screen.blit(back, (20, 610))
-    screen.blit(text, (WIDTH//2-276,HEIGHT//2-65))
-    screen.blit(text2, (WIDTH // 2 - 150, HEIGHT // 2 + 10))
+    screen.blit(text, (WIDTH // 2 - 276, HEIGHT // 2 - 65))
+    screen.blit(text2, (WIDTH // 2 - 250, HEIGHT // 2 - 150))
 
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
@@ -387,15 +369,18 @@ def gameover(points):
             sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            rect =pygame.Rect((20,600,140,90))
+            rect = pygame.Rect((20, 600, 140, 90))
             if rect.collidepoint(pos):
                 game = Menu(punkts)
                 game.menu()
     pygame.display.flip()
     clock.tick(fps)
+
+
 class Menu:
     state = "menu"
     pygame.mixer.Sound.play(menu_back_ground, loops=-1)
+
     def __init__(self, punkts=[200, 300, 'Punkts', white, red, 2]):
         self.punkts = punkts
 
@@ -417,7 +402,8 @@ class Menu:
             if self.state == "menu":
                 mp = pygame.mouse.get_pos()
                 for i in self.punkts:
-                    if mp[0] > i[0] and mp[0] < i[0] + 260 and mp[1] > i[1] and mp[1] < i[1] + 100:  # checking пересекается курсор в пунктом меню или нет
+                    if mp[0] > i[0] and mp[0] < i[0] + 260 and mp[1] > i[1] and mp[1] < i[
+                        1] + 100:  # checking пересекается курсор в пунктом меню или нет
                         punkt = i[5]
                 screen.blit(cosmos, (0, 0))
                 self.render(screen, font_menu, punkt)
@@ -440,7 +426,6 @@ class Menu:
 
             if self.state == "help":
                 help(self)
-
 
 
 punkts = [(200, 260, 'Game', white, red, 0),
