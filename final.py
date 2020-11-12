@@ -146,10 +146,7 @@ class Player(Ship):
         pygame.draw.rect(window, (0, 255, 0), (
         self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() - (self.max_health - self.health),
         10))
-        # 1st RED-length of the player, 2nd GREEN-on tip of the red (be only the length of the health)
-        # ex. (255,0,0)-red color; (self.x, self.y + self.ship_img.get_height() + 10- we want to be sure tha health bar is below our player(so we want to get y value of the player add height of the shipp and ten pixels and then start drawing)
-        # self.ship_img.get_width() * (self.health/self.max_health - what % of the width we should draw
-
+      
 
 class Enemy(Ship):
     # those we will need when we add our own pictures
