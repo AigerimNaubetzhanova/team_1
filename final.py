@@ -274,11 +274,8 @@ def main(menu):
                                 pygame.mixer.fadeout(2000)
                                 player.health = player.max_health
                                 enemy.lasers.remove(laser)
-
                             else:
                                 lost = True
-
-
                         else:
                             player.health -= 10
                             enemy.lasers.remove(laser)
