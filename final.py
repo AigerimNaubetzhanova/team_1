@@ -156,11 +156,13 @@ class Enemy(Ship):
 
     def __init__(self, x, y, color, health=100):
         super().__init__(x, y, health)
+        self.x_direction = 1 if random.random() >= 0.5 else -1
         self.ship_img, self.laser_img = self.COLOR_MAP[color]
         self.mask = pygame.mask.from_surface(self.ship_img)
 
     def move_enemy(self, vel):
         self.y += vel
+        self.x += self.x_direction * vel
 
     def shoot(self):
         if self.cool_down_counter == 0:
@@ -282,6 +284,8 @@ def main(menu):
 
 
                 if not lost:
+                    if enemy.x + enemy.get_width() > WIDTH or enemy.x < 0:
+                        enemy.x_direction *= -1
 
                     if random.randrange(0, 5 * 60) == 1:
                         enemy.shoot()
