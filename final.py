@@ -2,6 +2,7 @@ import pygame
 import random
 import sys
 from pygame import mixer
+
 pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
@@ -49,8 +50,8 @@ enemy_hits_spaceship = pygame.mixer.Sound("enemy_hits_spaceships.wav")
 enemy_laser_shoot = pygame.mixer.Sound("Blaster-Ricochet.wav")
 explosion_sound = pygame.mixer.Sound("Explosion_sounds.wav")
 when_the_last_life_is_left = pygame.mixer.Sound("whenlastlifeleft.wav")
-class Laser:
 
+class Laser:
     def __init__(self, x, y, img):
         self.x = x
         self.y = y
@@ -69,7 +70,6 @@ class Laser:
 
     def collision(self, obj):
         return collide(self, obj)
-
 
 class Ship:
     COOLDOWN = 30
@@ -93,7 +93,7 @@ class Ship:
         if self.cool_down_counter >= self.COOLDOWN:
             self.cool_down_counter = 0
         elif self.cool_down_counter > 0:
-            self.cool_down_counter += 1
+            self.cool_down_counter += 2
 
     def get_width(self):
         return self.ship_img.get_width()
@@ -131,7 +131,6 @@ class Player(Ship):
                         screen.blit(explosion_picture, (obj.x, obj.y))
                         pygame.display.update()
                         pygame.mixer.Sound.play(explosion_sound)
-
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
@@ -168,11 +167,6 @@ class Enemy(Ship):
             laser = Laser(self.x + 35, self.y, self.laser_img)
             self.lasers.append(laser)
             self.cool_down_counter = 1
-
-
-
-
-
 
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x  # distance from obj1 to obj2 returns vector
@@ -225,12 +219,6 @@ def main(menu):
     while run:
         clock.tick(fps)
         update_window()
-        # if you lost then FREEZE
-
-
-        if lives <= 0 and player.health <= 0:
-            lost = True
-            continue
 
         if len(enemies) == 0:
             level += 1
@@ -313,6 +301,7 @@ def main(menu):
                                 enemies.remove(enemy)
                             else:
                                 lost = True
+
                         else:
                             player.health -= 10
                             pygame.mixer.Sound.play(enemy_laser_shoot)
@@ -328,7 +317,9 @@ def main(menu):
                         else:
                             lost = True
 
-        player.move_lasers(-laser_vel, enemies)# strelyat' vverh a ne vniz
+        if not lost:
+
+            player.move_lasers(-laser_vel, enemies)# strelyat' vverh a ne vniz
 
 
 fps = 60
