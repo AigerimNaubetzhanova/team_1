@@ -15,7 +15,7 @@ red = (200, 0, 0)
 pygame.font.init()
 myfont = pygame.font.Font('you_lost.ttf', 40)
 you_lost_font = pygame.font.Font('you_lost.ttf', 20)
-my_font=pygame.font.Font('you_lost.ttf', 70)
+my_font = pygame.font.Font('you_lost.ttf', 70)
 # Load images
 spaceship = pygame.image.load("spaceship.png")
 blue_laser = pygame.image.load("blue_laser.png")
@@ -26,13 +26,12 @@ grey_enemy_ship = pygame.image.load("grey_enemy.png")
 background = pygame.image.load("background.png").convert()
 heart = pygame.image.load("heart.png")
 explosion_picture = pygame.image.load("explosions.png")
-asteroid_right_to_left = pygame.image.load("asteroid_right.png").convert_alpha()
+asteroid_right_to_left = pygame.image.load("asteroid.png")
 explosion_picture = pygame.transform.scale(explosion_picture, (100, 100))
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the size of our window
 spaceship = pygame.transform.scale(spaceship, (100, 100))
 asteroid_right_to_left = pygame.transform.scale(asteroid_right_to_left, (80, 80))
-
-#asteroid_right_to_left.set_colorkey((0, 0, 0))
+asteroid_right_to_left.set_colorkey((255, 255, 255))
 blue_laser = pygame.transform.scale(blue_laser, (20, 50))
 greenlaser = pygame.transform.scale(greenlaser, (20, 50))
 red_laser = pygame.transform.scale(red_laser, (block_size, block_size))
@@ -42,13 +41,11 @@ heart = pygame.transform.scale(heart, (block_size // 2, block_size // 2))
 cosmos = pygame.image.load("menu1.jpg").convert()
 cosmos = pygame.transform.scale(cosmos, (WIDTH, HEIGHT))
 back = pygame.image.load("back.jpg")
-
 back = pygame.transform.scale(back, (140, 90))
 back.set_colorkey((0, 0, 0))
 
 
-
-icon=pygame.image.load('GRPW.png')
+icon = pygame.image.load('GRPW.png')
 pygame.display.set_icon(icon)
 
 # Load sound
@@ -59,13 +56,13 @@ enemy_laser_shoot = pygame.mixer.Sound("Blaster-Ricochet.wav")
 explosion_sound = pygame.mixer.Sound("Explosion_sounds.wav")
 when_the_last_life_is_left = pygame.mixer.Sound("whenlastlifeleft.wav")
 
+
 class Laser:
     def __init__(self, x, y, img):
         self.x = x
         self.y = y
         self.img = img
         self.mask = pygame.mask.from_surface(self.img)
-
 
     def draw(self, window):
         window.blit(self.img, (self.x, self.y))
@@ -78,6 +75,7 @@ class Laser:
 
     def collision(self, obj):
         return collide(self, obj)
+
 
 class Ship:
     COOLDOWN = 30
@@ -116,8 +114,6 @@ class Ship:
             self.cool_down_counter = 1
 
 
-
-
 class Player(Ship):
     def __init__(self, x, y, health=100):
         super().__init__(x, y, health)
@@ -125,7 +121,6 @@ class Player(Ship):
         self.laser_img = red_laser
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
-
 
     def move_lasers(self, vel, objs):
         self.cooldown()
@@ -135,7 +130,7 @@ class Player(Ship):
                 self.lasers.remove(laser)
             else:
                 for obj in objs:
-                    if laser.collision(obj): # remove if  laser collide
+                    if laser.collision(obj):  # remove if  laser collide
                         screen.blit(explosion_picture, (obj.x, obj.y))
                         pygame.display.update()
                         pygame.mixer.Sound.play(explosion_sound)
@@ -151,9 +146,10 @@ class Player(Ship):
         pygame.draw.rect(window, (255, 0, 0),
                          (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10))
         pygame.draw.rect(window, (0, 255, 0), (
-        self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() - (self.max_health - self.health),
-        10))
-      
+            self.x, self.y + self.ship_img.get_height() + 10,
+            self.ship_img.get_width() - (self.max_health - self.health),
+            10))
+
 
 class Enemy(Ship):
     # those we will need when we add our own pictures
@@ -198,6 +194,8 @@ class Asteroid:
     def collision(self, obj):
         return collide(self, obj)
 
+
+
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x  # distance from obj1 to obj2 returns vector
     offset_y = obj2.y - obj1.y
@@ -213,7 +211,7 @@ def main(menu):
     points = 0
     main_font = pygame.font.Font("level.ttf", 30)
     asteroids = []
-    wave_length_for_asteroids = 5
+    wave_length_for_asteroids = 2
     enemies = []
     wave_length = 3
     enemy_vel = 1
@@ -226,15 +224,19 @@ def main(menu):
 
     lost = False
 
+
     def update_window():  # in order to update the screen
-        screen.blit(background, (0, 0))
+        size=screen.get_size()
+        background_pos = (enemy_vel//3)% size[0]
+        screen.blit(background,(background_pos,0))
+        screen.blit(background, (background_pos-size[0],0))
         for x in range(lives):
             screen.blit(heart, (x * block_size // 2, 40))
 
         level_label = main_font.render(f"Level: {level}", 1, (255, 255, 255))
         points_label = main_font.render(f"Points: {int(points)}", 1, (255, 255, 255))
         screen.blit(level_label, (10, 0))
-        screen.blit(points_label, (500,0))
+        screen.blit(points_label, (500, 0))
 
         for enemy in enemies:
             enemy.draw(screen)
@@ -248,7 +250,6 @@ def main(menu):
             gameover(points)
         pygame.display.update()
 
-
     while run:
         clock.tick(fps)
         update_window()
@@ -256,7 +257,7 @@ def main(menu):
         if len(enemies) == 0:
             level += 1
             wave_length += 3
-            wave_length_for_asteroids += 2
+            wave_length_for_asteroids += 1
             enemy_vel += 1
             # this is for the enemies fall down at random positions positions
             for i in range(wave_length):
@@ -266,7 +267,7 @@ def main(menu):
 
 
             for i in range(wave_length_for_asteroids):
-                asteroid = Asteroid(random.randrange(-100, 0), random.randrange(50, HEIGHT - 100) )
+                asteroid = Asteroid(random.randrange(0,5), random.randrange(50, HEIGHT - 200) )
                 asteroids.append(asteroid)
 
 
@@ -289,9 +290,6 @@ def main(menu):
             player.shoot()
         if keys[pygame.K_ESCAPE]:
             game.menu()
-
-
-
 
         for enemy in enemies[:]:
             if not lost:
@@ -320,14 +318,12 @@ def main(menu):
                             player.health -= 10
                             enemy.lasers.remove(laser)
 
-
                 if not lost:
                     if enemy.x + enemy.get_width() > WIDTH or enemy.x < 0:
                         enemy.x_direction *= -1
 
                     if random.randrange(0, 5 * 60) == 1:
                         enemy.shoot()
-
 
                     if collide(enemy, player):
                         pygame.mixer.Sound.play(enemy_hits_spaceship)
@@ -357,34 +353,33 @@ def main(menu):
                             lost = True
 
         if not lost:
-
-            player.move_lasers(-laser_vel, enemies)# strelyat' vverh a ne vniz
+            player.move_lasers(-laser_vel, enemies)  # strelyat' vverh a ne vniz
             for asteroid in asteroids[:]:
                 asteroid.move(enemy_vel)
                 if asteroid.off_screen(WIDTH):
                     asteroids.remove(asteroid)
-                elif asteroid.collision(player):
-                    if player.health == 10:
-                        if lives >= 1:
-                            lives -= 1
-                            pygame.mixer.Sound.play(when_the_last_life_is_left)
-                            pygame.mixer.fadeout(2000)
-                            player.health = player.max_health
+                elif collide(asteroid, player):
+                    pygame.mixer.Sound.play(enemy_hits_spaceship)
 
-                        else:
-                            lost = True
-
+                    if lives >= 1:
+                        lives -= 1
+                        pygame.mixer.Sound.play(when_the_last_life_is_left)
+                        pygame.mixer.fadeout(2000)
+                        player.health = player.max_health
+                        asteroids.remove(asteroid)
+                    else:
+                        lost = True
 
 fps = 60
 
 
 def help(menu):
-    cosmos.set_colorkey((0,0,0))
+    cosmos.set_colorkey((0, 0, 0))
     cosmos.set_alpha(50)
     screen.blit(cosmos, (0, 0))
-    surf=pygame.Surface((730,600))
+    surf = pygame.Surface((730, 600))
     surf.set_alpha(30)
-    screen.blit(surf,(10,10))
+    screen.blit(surf, (10, 10))
 
     text = myfont.render("The rules of the game:", True, white)
     text1 = you_lost_font.render("GOAL:", True, red)
@@ -409,7 +404,7 @@ def help(menu):
             sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            rect =pygame.Rect((20,600,140,90))
+            rect = pygame.Rect((20, 600, 140, 90))
             if rect.collidepoint(pos):
                 menu.state = "menu"
     pygame.display.flip()
@@ -419,12 +414,11 @@ def help(menu):
 def gameover(points):
     screen.blit(cosmos, (0, 0))
     text = my_font.render("Game over", True, red)
-    text2 =my_font.render(f"{int(points)} points", True, white)
+    text2 = my_font.render(f"{int(points)} points", True, white)
 
     screen.blit(back, (20, 610))
-    screen.blit(text, (WIDTH//2-276,HEIGHT//2-65))
+    screen.blit(text, (WIDTH // 2 - 276, HEIGHT // 2 - 65))
     screen.blit(text2, (WIDTH // 2 - 250, HEIGHT // 2 - 150))
-
 
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
@@ -432,15 +426,18 @@ def gameover(points):
             sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            rect =pygame.Rect((20,600,140,90))
+            rect = pygame.Rect((20, 600, 140, 90))
             if rect.collidepoint(pos):
                 game = Menu(punkts)
                 game.menu()
     pygame.display.flip()
     clock.tick(fps)
+
+
 class Menu:
     state = "menu"
     pygame.mixer.Sound.play(menu_back_ground, loops=-1)
+
     def __init__(self, punkts=[200, 300, 'Punkts', white, red, 2]):
         self.punkts = punkts
 
@@ -462,7 +459,8 @@ class Menu:
             if self.state == "menu":
                 mp = pygame.mouse.get_pos()
                 for i in self.punkts:
-                    if mp[0] > i[0] and mp[0] < i[0] + 260 and mp[1] > i[1] and mp[1] < i[1] + 100:  # checking пересекается курсор в пунктом меню или нет
+                    if mp[0] > i[0] and mp[0] < i[0] + 260 and mp[1] > i[1] and mp[1] < i[
+                        1] + 100:  # checking пересекается курсор в пунктом меню или нет
                         punkt = i[5]
                 screen.blit(cosmos, (0, 0))
                 self.render(screen, font_menu, punkt)
@@ -485,7 +483,6 @@ class Menu:
 
             if self.state == "help":
                 help(self)
-
 
 
 punkts = [(200, 260, 'Game', white, red, 0),
