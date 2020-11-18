@@ -25,9 +25,11 @@ grey_enemy_ship = pygame.image.load("grey_enemy.png")
 background = pygame.image.load("background.png").convert()
 heart = pygame.image.load("heart.png")
 explosion_picture = pygame.image.load("explosions.png")
+asteroid_right_to_left = pygame.image.load("asteroid_right.png")
 explosion_picture = pygame.transform.scale(explosion_picture, (100, 100))
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the size of our window
 spaceship = pygame.transform.scale(spaceship, (100, 100))
+asteroid_right_to_left = pygame.transform.scale(asteroid_right_to_left, (80, 80))
 blue_laser = pygame.transform.scale(blue_laser, (20, 50))
 greenlaser = pygame.transform.scale(greenlaser, (20, 50))
 red_laser = pygame.transform.scale(red_laser, (block_size, block_size))
@@ -170,10 +172,24 @@ class Enemy(Ship):
             self.lasers.append(laser)
             self.cool_down_counter = 1
 
+class Asteroid:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.asteroid_img = asteroid_right_to_left
+        self.mask = pygame.mask.from_surface(self.asteroid_img)
 
+    def draw(self, window):
+        window.blit(self.asteroid_img, (self.x, self.y))
 
+    def move(self, vel):
+        self.x += vel*2
 
+    def off_screen(self, width):
+        return not (self.x <= width and self.x >= 0)
 
+    def collision(self, obj):
+        return collide(self, obj)
 
 def collide(obj1, obj2):
     offset_x = obj2.x - obj1.x  # distance from obj1 to obj2 returns vector
@@ -190,6 +206,8 @@ def main(menu):
     main_font = pygame.font.Font("level.ttf", 30)
 
     enemies = []
+    asteroids = []
+    wave_length_for_asteroids = 3
     wave_length = 5
     enemy_vel = 1
 
@@ -230,6 +248,8 @@ def main(menu):
             lost = True
             continue
 
+
+
         if len(enemies) == 0:
             level += 1
             wave_length += 5
@@ -240,11 +260,15 @@ def main(menu):
                               random.choice(["grey", "blue"]))
                 enemies.append(enemy)
 
+        if level >= 2:
+            for i in range
+
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player.x - player_vel > 0:  # left
             player.x -= player_vel
@@ -259,6 +283,10 @@ def main(menu):
             player.shoot()
         if keys[pygame.K_ESCAPE]:
             game.menu()
+
+
+
+
 
         for enemy in enemies[:]:
             if not lost:
