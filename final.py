@@ -26,11 +26,11 @@ grey_enemy_ship = pygame.image.load("grey_enemy.png")
 background = pygame.image.load("background.png").convert()
 heart = pygame.image.load("heart.png")
 explosion_picture = pygame.image.load("explosions.png")
-asteroid_right_to_left = pygame.image.load("asteroid.png")
+asteroid_right_to_left = pygame.image.load("asteroid.jpg")
 explosion_picture = pygame.transform.scale(explosion_picture, (100, 100))
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))  # to match the size of our window
 spaceship = pygame.transform.scale(spaceship, (100, 100))
-asteroid_right_to_left = pygame.transform.scale(asteroid_right_to_left, (80, 80))
+asteroid_right_to_left = pygame.transform.scale(asteroid_right_to_left, (120, 100))
 asteroid_right_to_left.set_colorkey((255, 255, 255))
 blue_laser = pygame.transform.scale(blue_laser, (20, 50))
 greenlaser = pygame.transform.scale(greenlaser, (20, 50))
@@ -44,7 +44,6 @@ back = pygame.image.load("back.jpg")
 back = pygame.transform.scale(back, (140, 90))
 back.set_colorkey((0, 0, 0))
 
-
 icon = pygame.image.load('GRPW.png')
 pygame.display.set_icon(icon)
 
@@ -56,6 +55,31 @@ enemy_laser_shoot = pygame.mixer.Sound("Blaster-Ricochet.wav")
 explosion_sound = pygame.mixer.Sound("Explosion_sounds.wav")
 when_the_last_life_is_left = pygame.mixer.Sound("whenlastlifeleft.wav")
 
+
+class Background():
+    def __init__(self):
+        self.bgimage = background
+        self.rectBGimg = self.bgimage.get_rect()
+
+        self.bgY1 = 0
+        self.bgX1 = 0
+
+        self.bgY2 = self.rectBGimg.height
+        self.bgX2 = 0
+
+        self.moving_speed = 1
+
+    def update(self):
+        self.bgY1 -= self.moving_speed
+        self.bgY2 -= self.moving_speed
+        if self.bgY1 <= -self.rectBGimg.height:
+            self.bgY1 = self.rectBGimg.height
+        if self.bgY2 <= -self.rectBGimg.height:
+            self.bgY2 = self.rectBGimg.height
+
+    def render(self):
+        screen.blit(self.bgimage, (self.bgX1, self.bgY1))
+        screen.blit(self.bgimage, (self.bgX2, self.bgY2))
 
 class Laser:
     def __init__(self, x, y, img):
@@ -223,13 +247,11 @@ def main(menu):
     clock = pygame.time.Clock()
 
     lost = False
-
+    background = Background()
 
     def update_window():  # in order to update the screen
-        size=screen.get_size()
-        background_pos = (enemy_vel//3)% size[0]
-        screen.blit(background,(background_pos,0))
-        screen.blit(background, (background_pos-size[0],0))
+        background.update()
+        background.render()
         for x in range(lives):
             screen.blit(heart, (x * block_size // 2, 40))
 
@@ -254,9 +276,10 @@ def main(menu):
         clock.tick(fps)
         update_window()
 
+
         if len(enemies) == 0:
             level += 1
-            wave_length += 3
+            wave_length += 1
             wave_length_for_asteroids += 1
             enemy_vel += 1
             # this is for the enemies fall down at random positions positions
@@ -264,10 +287,8 @@ def main(menu):
                 enemy = Enemy(random.randrange(50, WIDTH - 100), random.randrange(-1500, -100),
                               random.choice(["grey", "blue"]))
                 enemies.append(enemy)
-
-
             for i in range(wave_length_for_asteroids):
-                asteroid = Asteroid(random.randrange(0,5), random.randrange(50, HEIGHT - 200) )
+                asteroid = Asteroid(random.randrange(-100,0), random.randrange(50, HEIGHT - 150) )
                 asteroids.append(asteroid)
 
 
@@ -356,6 +377,7 @@ def main(menu):
             player.move_lasers(-laser_vel, enemies)  # strelyat' vverh a ne vniz
             for asteroid in asteroids[:]:
                 asteroid.move(enemy_vel)
+
                 if asteroid.off_screen(WIDTH):
                     asteroids.remove(asteroid)
                 elif collide(asteroid, player):
@@ -369,7 +391,7 @@ def main(menu):
                         asteroids.remove(asteroid)
                     else:
                         lost = True
-
+            player.move_lasers(-laser_vel, asteroids)
 fps = 60
 
 
