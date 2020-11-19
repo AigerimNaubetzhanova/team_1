@@ -391,6 +391,7 @@ def main(menu):
                         asteroids.remove(asteroid)
                     else:
                         lost = True
+        if not lost:
             player.move_lasers(-laser_vel, asteroids)
 fps = 60
 
